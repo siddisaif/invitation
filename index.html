@@ -92,7 +92,7 @@ a.map{display:inline-block;margin-top:18px;padding:12px 26px;border:1px solid va
    <div style="margin-top:22px;font-family:'Cinzel',serif;font-size:16px;letter-spacing:3px;color:var(--g)">With</div>
    <div class="nm" style="margin-top:20px">Saima</div>
    <div class="cin" style="margin-top:6px;font-size:13px;letter-spacing:8px">SHAIKH</div>
-   <div style="margin-top:26px;font-family:'Cinzel',serif;font-size:13px;letter-spacing:1.5px;line-height:1.9;opacity:.92">D/O MR. ANIS AHMED SHAIKH<br>&amp; MRS. HASINA AHMED SHAIKH</div>
+   <div style="margin-top:26px;font-family:'Cinzel',serif;font-size:13px;letter-spacing:1.5px;line-height:1.9;opacity:.92">D/O MR. ANIS AHMED SHAIKH<br>&amp; MRS. HASIAA AHMED SHAIKH</div>
   </div>
   <div class="r line" style="--i:10;margin-top:34px"></div>
   <div class="r card" style="--i:11;margin-top:32px">
@@ -117,8 +117,17 @@ for(i=0;i<36;i++){s=document.createElement('i');s.className='star';s.style.cssTe
 for(i=0;i<7;i++){l=document.createElement('i');l.className='lantern';l.style.cssText='left:'+(8+i*13)+'%;animation-delay:'+(i*2)+'s;animation-duration:'+(11+i%3*3)+'s';fx.appendChild(l)}
 var cv=document.getElementById('cover'),au=document.getElementById('au'),w=document.getElementById('w');
 var y0=null,dy=0,opened=false;
+var ev=['click','touchend','pointerup','keydown'],armed=false;
+function fade(){var v=0,f=setInterval(function(){v+=.04;if(v>=.8){v=.8;clearInterval(f)}try{au.volume=v}catch(e){}},150)}
+function retry(){if(!au.paused){disarm();return}var q=au.play();if(q&&q.then)q.then(function(){disarm();fade()}).catch(function(){})}
+function arm(){if(armed)return;armed=true;ev.forEach(function(e){document.addEventListener(e,retry,true)})}
+function disarm(){armed=false;ev.forEach(function(e){document.removeEventListener(e,retry,true)})}
+function startMusic(){try{au.muted=false;au.currentTime=0;au.volume=0}catch(e){}
+ var q;try{q=au.play()}catch(e){}
+ if(q&&q.then){q.then(fade).catch(arm)}else{arm()}
+ setTimeout(function(){if(au.paused)arm()},700)}
 function openIt(){if(opened)return;opened=true;cv.classList.add('snap');cv.style.transform='translateY(-105%)';
- try{au.currentTime=0;au.volume=0;var p=au.play();if(p&&p.catch)p.catch(function(){});var v=0,f=setInterval(function(){v+=.04;if(v>=.8){v=.8;clearInterval(f)}au.volume=v},150)}catch(e){}
+ startMusic();
  w.classList.add('open');
  setTimeout(function(){document.body.classList.remove('lock');cv.style.display='none';window.scrollTo(0,0)},950)}
 function start(e){if(opened)return;y0=(e.touches?e.touches[0]:e).clientY;cv.classList.remove('snap')}
