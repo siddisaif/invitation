@@ -117,7 +117,7 @@ for(i=0;i<36;i++){s=document.createElement('i');s.className='star';s.style.cssTe
 for(i=0;i<7;i++){l=document.createElement('i');l.className='lantern';l.style.cssText='left:'+(8+i*13)+'%;animation-delay:'+(i*2)+'s;animation-duration:'+(11+i%3*3)+'s';fx.appendChild(l)}
 var cv=document.getElementById('cover'),au=document.getElementById('au'),w=document.getElementById('w');
 var y0=null,dy=0,opened=false;
-var ev=['click','touchend','pointerup','keydown'],armed=false,AC=window.AudioContext||window.webkitAudioContext,ctx=null,buf=null,node=null,want=false;
+var ev=['click','touchend','pointerup','pointerdown','mousedown','keydown'],armed=false,AC=window.AudioContext||window.webkitAudioContext,ctx=null,buf=null,node=null,want=false;
 try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
 try{var b64=au.getAttribute('src').split(',')[1],bin=atob(b64),u8=new Uint8Array(bin.length);for(var k=0;k<bin.length;k++)u8[k]=bin.charCodeAt(k);
  ctx=new AC();ctx.decodeAudioData(u8.buffer,function(b){buf=b;if(want&&ctx.state==='running')go()},function(){ctx=null})}catch(e){ctx=null}
@@ -131,8 +131,9 @@ function disarm(){armed=false;ev.forEach(function(e){document.removeEventListene
 function startMusic(){want=true;
  if(ctx){try{ctx.resume()}catch(e){}if(buf&&ctx.state==='running')go();arm();setTimeout(function(){if(ctx.state==='running'&&buf)go()},300)}
  else{try{au.currentTime=0;au.volume=0}catch(e){}var q;try{q=au.play()}catch(e){}if(q&&q.then){q.then(fade).catch(arm)}else{arm()}}}
+startMusic();
 function openIt(){if(opened)return;opened=true;cv.classList.add('snap');cv.style.transform='translateY(-105%)';
- startMusic();
+ retry();
  w.classList.add('open');
  setTimeout(function(){document.body.classList.remove('lock');cv.style.display='none';window.scrollTo(0,0)},950)}
 function start(e){if(opened)return;y0=(e.touches?e.touches[0]:e).clientY;cv.classList.remove('snap')}
@@ -145,7 +146,7 @@ var T=new Date('2026-12-24T19:00:00+05:30').getTime();function p(n){return n<10?
 function tick(){var d=T-Date.now();if(d<=0){document.getElementById('cd').style.display='none';document.getElementById('cdt').textContent='Alhamdulillah — the Walima celebration is here';return}
 document.getElementById('cdd').textContent=p(Math.floor(d/864e5));document.getElementById('cdh').textContent=p(Math.floor(d%864e5/36e5));document.getElementById('cdm').textContent=p(Math.floor(d%36e5/6e4));document.getElementById('cds').textContent=p(Math.floor(d%6e4/1e3))}
 tick();setInterval(tick,1000);
-document.addEventListener('visibilitychange',function(){if(!opened)return;if(ctx){if(document.hidden)ctx.suspend();else ctx.resume()}else if(document.hidden)au.pause();else{var q=au.play();if(q&&q.catch)q.catch(function(){})}});
+document.addEventListener('visibilitychange',function(){if(ctx){if(document.hidden)ctx.suspend();else ctx.resume()}else if(document.hidden)au.pause();else{var q=au.play();if(q&&q.catch)q.catch(function(){})}});
 })();
 </script>
 </body></html>
